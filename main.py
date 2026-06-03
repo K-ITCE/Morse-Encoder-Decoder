@@ -248,6 +248,7 @@ def text_to_audio(text, output_file, dot_duration=0.05, tone_freq=600, sr=22050)
   """
   morse_code = text_to_morse(text)
   morse_to_audio(morse_code, output_file, dot_duration, tone_freq, sr)
+  print(f"✓ Morse code: {morse_code}")
   return morse_code
 
 def audio_to_morse(file, smooth_kernel=101, threshold=None, plot=False):
