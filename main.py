@@ -394,7 +394,7 @@ if __name__ == "__main__":
             print(f"✓ Audio saved to {output_file}")
         elif choice == '2':
             filepath = input("Enter WAV file path: ")
-            plot = input("Save plots? (y/n) [n]: ").lower() == 'y'
+            plot = input("Save plots? (y/[n]): ").lower() == 'y'
             
             if os.path.exists(filepath):
                 try:

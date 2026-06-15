@@ -22,23 +22,15 @@ A Python-based, bidirectional Morse code converter with interactive CLI that enc
 5. **Symbol reconstruction**: Builds morse code string from detected symbols
 6. **Morse to text**: Dictionary lookup converts morse back to characters
 
-## Major Challenges & Solutions
+---
 
-### Challenge 1: Timing Threshold Detection
-**Problem**: KMeans clustering was overly complex and produced `nan` values due to dataframe indexing issues when filtering.
-**Solution**: Replaced with simpler gap-detection algorithm that finds the largest discontinuity in sorted tone durations to distinguish dots from dashes. Midpoint clustering for silence gaps using median of first/second halves.
+## Instructions to Run
 
-### Challenge 2: Floating-Point Precision
-**Problem**: Tone durations like 0.0970s failed `<=` comparisons due to floating-point rounding.
-**Solution**: Added 20% buffer to thresholds (`dot_max = unit * 1.2`) to handle edge cases gracefully.
+1. Clone the repository: `git clone https://github.com/K-ITCE/Morse-Encoder-Decoder.git`
+2. Install dependencies: `pip install -r requirements.txt`
+3. Run the program: `python main.py`
 
-### Challenge 3: Mixed Dot/Dash Ratio Variance
-**Problem**: Messages with many dashes caused median calculation to pick dash duration as the "unit", breaking detection.
-**Solution**: Use largest gap in sorted tone durations as the split point, not median—more robust for mixed content.
-
-### Challenge 4: Dataframe Index Misalignment
-**Problem**: `intervals[intervals['value']==1]['end'] - intervals['start']` produced NaN values.
-**Solution**: Filter into separate variable first, then perform arithmetic on matching indices.
+---
 
 ## Decoding Methodology - Technical Details
 
@@ -48,9 +40,14 @@ A Python-based, bidirectional Morse code converter with interactive CLI that enc
 
 **Symbol Reconstruction**: Intervals are classified as dots/dashes by comparing duration against the computed thresholds (panel 4 shows red bars below the purple line = dots, above = dashes; blue bars reveal gap classification), reconstructing the morse string with space delimiters between characters and `/` delimiters between words. The entire pipeline is speed-invariant—scaling dot duration proportionally preserves relative thresholds, ensuring decoding accuracy across different speeds and frequencies.
 
+---
+
 ## Visualization
 
 The decoder includes an optional **4-panel diagnostic plot** (`plots/morse_analysis.png`) that visualizes the decoding pipeline:
+
+**"Hello, World!"** or **".... . .-.. .-.. --- --..-- / .-- --- .-. .-.. -.. -.-.--"**
+![Program's output plots from decoding "Hello, World!"](plots/HW_fast.png)
 
 1. **Raw Audio Signal**: Original waveform from the WAV file
 2. **Envelope + Threshold**: Hilbert transform result with 30% threshold line showing signal detection boundary
@@ -63,6 +60,8 @@ The decoder includes an optional **4-panel diagnostic plot** (`plots/morse_analy
    - Brown dotted line = inter-letter gap threshold
 
 This visualization makes the timing classification logic transparent and helps users understand how variable speeds/frequencies are adaptively handled.
+
+---
 
 ## Specification Sheet
 
@@ -81,3 +80,22 @@ This visualization makes the timing classification logic transparent and helps u
 | **Encode Filename Format** | `wav/morse_HHMMSS.wav` (timestamp-based, no overwrites) |
 | **Plot Output** | `plots/morse_analysis.png` (overwrites on each decode) |
 
+---
+
+## Major Challenges & Solutions
+
+### Challenge 1: Timing Threshold Detection
+**Problem**: KMeans clustering was overly complex and produced `nan` values due to dataframe indexing issues when filtering.
+**Solution**: Replaced with simpler gap-detection algorithm that finds the largest discontinuity in sorted tone durations to distinguish dots from dashes. Midpoint clustering for silence gaps using median of first/second halves.
+
+### Challenge 2: Floating-Point Precision
+**Problem**: Tone durations like 0.0970s failed `<=` comparisons due to floating-point rounding.
+**Solution**: Added 20% buffer to thresholds (`dot_max = unit * 1.2`) to handle edge cases gracefully.
+
+### Challenge 3: Mixed Dot/Dash Ratio Variance
+**Problem**: Messages with many dashes caused median calculation to pick dash duration as the "unit", breaking detection.
+**Solution**: Use largest gap in sorted tone durations as the split point, not median—more robust for mixed content.
+
+### Challenge 4: Dataframe Index Misalignment
+**Problem**: `intervals[intervals['value']==1]['end'] - intervals['start']` produced NaN values.
+**Solution**: Filter into separate variable first, then perform arithmetic on matching indices.
